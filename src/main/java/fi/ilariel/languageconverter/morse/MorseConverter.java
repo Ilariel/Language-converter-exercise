@@ -59,6 +59,7 @@ public class MorseConverter extends LanguageConverter {
   public static final String MORSE_9 = "−−−−•";
   public static final String MORSE_0 = "−−−−−";
 
+  private static final String MORSE_CODE_WORD_SEPARATOR = " "; //Space
   private static final char MORSE_CODE_CHARACTER_SEPARATOR = '.';
 
   private final Mode mode;
@@ -201,7 +202,9 @@ public class MorseConverter extends LanguageConverter {
       case MORSE_0:
         morseString = '0';
         break;
-
+      case MORSE_CODE_WORD_SEPARATOR:
+        morseString = ' ';
+        break;
       default:
         throw new ConversionException(morse + " is not a valid Morse code sequence");
     }
@@ -337,6 +340,9 @@ public class MorseConverter extends LanguageConverter {
       case '0':
         morseString = MORSE_0;
         break;
+      case ' ':
+        morseString = MORSE_CODE_WORD_SEPARATOR;
+        break;
       default:
         throw new ConversionException("Conversion for " + ch + "is not supported");
     }
@@ -409,7 +415,10 @@ public class MorseConverter extends LanguageConverter {
       buffer.setLength(0);
 
       //Use regular expression for finding separators
-      Matcher matcher = Pattern.compile("([•−]+)|(\\.)").matcher(text);
+      //Capture space, sequence of dits or/and dahs to until next delimiter dot or dot
+      //Group 1 is space or sequence of dits and dahs
+      //Group 2 is dot '.'
+      Matcher matcher = Pattern.compile("( |[•−]+)|(\\.)").matcher(text);
 
       while (matcher.find()) {
         String match = matcher.group(1);

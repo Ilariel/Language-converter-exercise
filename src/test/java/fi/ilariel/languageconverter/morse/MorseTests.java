@@ -80,6 +80,20 @@ public class MorseTests {
     assertEquals(roundTripExpected,outAgain.toString());
   }
 
+  @Test
+  public void withSpaces() {
+    String input = "hello world";
+    String roundTripExpected = "HELLO WORLD";
+    StringWriter outAgain = new StringWriter();
+
+    BufferedReader reader = new BufferedReader(new StringReader(input));
+    doConvert(reader,stringWriter,MorseConverter.Mode.TEXT_TO_MORSE);
+    reader = new BufferedReader(new StringReader(stringWriter.toString()));
+    doConvert(reader,outAgain,MorseConverter.Mode.MORSE_TO_TEXT);
+
+    assertEquals(roundTripExpected,outAgain.toString());
+  }
+
 
   @Test
   public void morseStringToEnglish() {
