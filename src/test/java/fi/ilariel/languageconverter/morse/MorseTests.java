@@ -7,12 +7,15 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import fi.ilariel.languageconverter.converter.ConversionException;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 
 public class MorseTests {
@@ -94,6 +97,20 @@ public class MorseTests {
     assertEquals(roundTripExpected,outAgain.toString());
   }
 
+  @Test
+  public void failWithMultipleDelimiters() {
+    String invalidInput = "•••..−−−..•••"; //SOS with multiple delimiters
+    BufferedReader reader = new BufferedReader(new StringReader(invalidInput));
+
+    try (MorseConverter converter = new MorseConverter(reader, stringWriter, MorseConverter.Mode.MORSE_TO_TEXT)) {
+      converter.convert();
+      fail("Expected a ConversionException from invalid input");
+    } catch (IOException e) {
+      e.printStackTrace();
+    } catch (ConversionException e) {
+      assertEquals(e.getMessage(),MorseConverter.MORSE_DELIMIT_EXCEPTION_MESSAGE);
+    }
+  }
 
   @Test
   public void morseStringToEnglish() {

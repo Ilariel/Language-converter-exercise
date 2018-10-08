@@ -58,10 +58,9 @@ public class MorseConverter extends LanguageConverter {
   public static final String MORSE_8 = "−−−••";
   public static final String MORSE_9 = "−−−−•";
   public static final String MORSE_0 = "−−−−−";
-
+  static final String MORSE_DELIMIT_EXCEPTION_MESSAGE = "Morse characters should be delimited with only one dot";
   private static final String MORSE_CODE_WORD_SEPARATOR = " "; //Space
   private static final char MORSE_CODE_CHARACTER_SEPARATOR = '.';
-
   private final Mode mode;
 
   /**
@@ -419,11 +418,18 @@ public class MorseConverter extends LanguageConverter {
       //Group 1 is space or sequence of dits and dahs
       //Group 2 is dot '.'
       Matcher matcher = Pattern.compile("( |[•−]+)|(\\.)").matcher(text);
-
+      boolean delimiter = false;
       while (matcher.find()) {
         String match = matcher.group(1);
         if (match != null) {
+          delimiter = false;
           buffer.append(morseToLetter(match));
+        } else {
+          //Accept only single dot delimitation
+          if (delimiter) {
+            throw new ConversionException(MORSE_DELIMIT_EXCEPTION_MESSAGE);
+          }
+          delimiter = true;
         }
       }
 
